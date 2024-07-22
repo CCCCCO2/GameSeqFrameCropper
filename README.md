@@ -2,6 +2,9 @@
 
 一个 Photoshop（PS） 脚本，可以将角色图片裁剪从而保持锚点居中，用于游戏引擎（Unity/UE）中导入成统一锚点的 sprite 使用
 
+下载链接：[Download .jsx File](https://github.com/CCCCCO2/PhotoShopCenterAvatarSpriteAnchorforGameEngine/releases/download/v1.0/CenterAvatarSpriteAnchorForGameEngine.jsx)
+
+
 由于是在游戏引擎中使用的 sprite，所以图片拥有并且要求有以下特点：
 
 - .png 格式
