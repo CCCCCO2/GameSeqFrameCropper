@@ -1,11 +1,11 @@
-﻿// 全局变量
+﻿// ===================== 全局配置变量 =====================
 var needCropTop = true;
 var needCropBottom = true;
 var needDrawGuideLine = true;
 var toleranceOfBottom = 5;
 var isBottomCenter = true;
 
-// UI 窗口界面
+// ===================== UI 界面 =====================
 var win = new Window("dialog", "使锚点居中的裁剪");
 win.orientation = "column";
 
@@ -33,7 +33,12 @@ neddCropBottomCheckbox.value = true; // 默认选中
 var cropCurrentDocumentButton = win.add("button", undefined, "裁剪当前文档");
 cropCurrentDocumentButton.onClick = function() 
 {
-    SyncParameters()
+    if (!SyncParameters()) return;
+    if (app.documents.length === 0) 
+    {
+        alert("没有打开任何文档，请先打开文档再进行裁剪");
+        return;
+    }
     var doc = app.activeDocument;
     CropCurrentDocument(doc);
 };
@@ -42,16 +47,19 @@ cropCurrentDocumentButton.onClick = function()
 var cropAllOpenedDocumentButton = win.add("button", undefined, "裁剪所有打开文档");
 cropAllOpenedDocumentButton.onClick = function() 
 {
-    SyncParameters()
-    var docs = app.documents;
+    if (!SyncParameters()) return;
+    if (app.documents.length === 0) 
+    {
+        alert("没有打开任何文档，请先打开文档再进行裁剪");
+        return;
+    }
 
+    var docs = app.documents;
     // 遍历每一个文档
     for (var i = 0; i < docs.length; i++) {
         var doc = docs[i]; // 当前文档
-
         // 激活当前文档
         app.activeDocument = doc;
-        
         CropCurrentDocument(doc);
     }
 };
@@ -60,15 +68,19 @@ cropAllOpenedDocumentButton.onClick = function()
 var saveAllOpenedDocumentButton = win.add("button", undefined, "保存所有打开文档（覆盖）");
 saveAllOpenedDocumentButton.onClick = function() 
 {
+    if (app.documents.length === 0) 
+    {
+        alert("没有打开任何文档，无需保存");
+        return;
+    }
+    
+    if (!confirm("确定要覆盖保存所有文档吗？")) return;
     var docs = app.documents;
-
     // 遍历每一个文档
     for (var i = 0; i < docs.length; i++) {
         var doc = docs[i]; // 当前文档
-
         // 激活当前文档
         app.activeDocument = doc;
-        
         SaveDocument(doc);
     }
 };
@@ -81,6 +93,7 @@ closeButton.onClick = function() {
 
 win.show();
 
+// ===================== 工具函数 =====================
 
 // 同步参数
 function SyncParameters()
@@ -93,14 +106,16 @@ function SyncParameters()
     var userInput = inputField.text;
     var integerInput = parseInt(userInput, 10);
 
-    if (!isNaN(integerInput)) {
+    if (!isNaN(integerInput) && userInput>=0 ) {
         toleranceOfBottom = integerInput;
+        return true;
     } else {
-        alert("请输入有效的整数");
-        return;
+        alert("请输入有效的非负整数");
+        return false;
     }
 }
 
+// ===================== 核心功能 =====================
 
 // 裁剪文档
 function CropCurrentDocument(doc) 
@@ -181,10 +196,11 @@ function CropCurrentDocument(doc)
         var guideRightBottomcrop =doc.guides.add(Direction.VERTICAL, new UnitValue(rightBound, "px"));
     }
 
-    try {
-        tempLayer.remove(); 
+    try 
+    {
+        tempLayer.remove();
     } catch (e) {
-        alert("无法删除图层: " + e.message);
+        alert("无法删除图层: " + e.message + "\n" + e.stack);
         return;
     }
 
@@ -237,5 +253,9 @@ function CropCurrentDocument(doc)
 // 保存文档
 function SaveDocument(doc)
 {
-    doc.save();
+    try{
+        doc.save();
+    } catch (e) {
+        alert("保存文档失败: " + e.message);
+    }
 }
