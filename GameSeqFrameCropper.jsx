@@ -16,7 +16,7 @@ var manualCropSettings=
     needDrawGuideLine : true,
     needExportCSVFile : true,
     needHorizontalScaling: true,
-    needVerticalScaling: false    // 纵向扩展，勾选后会以选区中心在纵向扩展保证保留图片上下限的前提下上下对称，即保证碰撞盒与选区在垂直方向完全一直，否则忽略垂直方向是否对称，仅进行保留图片上下限的最小裁剪
+    needVerticalScaling: false
 };
 
 // ===================== UI 界面 =====================
